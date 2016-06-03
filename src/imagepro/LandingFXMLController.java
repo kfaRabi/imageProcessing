@@ -17,6 +17,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -40,6 +42,8 @@ public class LandingFXMLController implements Initializable {
     private ImageView imageView;
     
     
+    Image imageOriginal = null;
+    Image image = null;
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
@@ -53,10 +57,10 @@ public class LandingFXMLController implements Initializable {
         File file = chooser.showOpenDialog(new Stage());
         String imagepath = file.getPath();
         System.out.println("file:"+imagepath);
-        Image image = new Image(file.toURI().toString());
+        imageOriginal = new Image(file.toURI().toString());
         //int w = (int)imageView.getFitWidth();
         //int h = (int)imageView.getFitHeight();
-        image = SwingFXUtils.toFXImage(colorToGray(image), null);
+        image = SwingFXUtils.toFXImage(colorToGray(imageOriginal), null);
         imageView.setImage(image);
         //imageView.setFitHeight(h);
         //imageView.setFitWidth(w);
@@ -68,6 +72,7 @@ public class LandingFXMLController implements Initializable {
         BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
         int height = bimg.getHeight();
         int width = bimg.getWidth();
+        
         //System.out.printf("[%d x %d]\n", width, height);
 
         for (int c = 0; c < width; c++)
@@ -77,8 +82,8 @@ public class LandingFXMLController implements Initializable {
                 int green = (rgb >>  8) & 0xFF;
                 int blue  = (rgb >>  0) & 0xFF;
 
-                //int average = (int) (0.21 * red + 0.72 * green + 0.07 * blue);
-                int average = green;
+                int average = (int) (0.21 * red + 0.72 * green + 0.07 * blue);
+                //int average = green;
                 int rr = average;
                 int gg = average;
                 int bb = average;
@@ -90,6 +95,8 @@ public class LandingFXMLController implements Initializable {
 
                 bimg.setRGB(c, r, rgb);
             }
+        
+
         return bimg;
     }
     @FXML
