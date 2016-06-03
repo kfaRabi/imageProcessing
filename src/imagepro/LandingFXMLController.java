@@ -5,9 +5,11 @@
  */
 package imagepro;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -37,14 +39,6 @@ public class LandingFXMLController implements Initializable {
     @FXML
     private ImageView imageView;
     
-//    @FXML
-//    private Label label;
-//    
-//    @FXML
-//    private void handleButtonAction(ActionEvent event) {
-//        System.out.println("You clicked me!");
-//        label.setText("Hello World!");
-//    }
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -53,15 +47,16 @@ public class LandingFXMLController implements Initializable {
 
     @FXML
     private void addImageAndApplyEffectButtonAction(ActionEvent event) {
-        //File file = new File("/src/sample.png");
+        //File fileb = new File("/src/sample.png");
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Please Select An Image");
-        File fileb = chooser.showOpenDialog(new Stage());
-        String imagepath = fileb.getPath();
+        File file = chooser.showOpenDialog(new Stage());
+        String imagepath = file.getPath();
         System.out.println("file:"+imagepath);
-        Image image = new Image(fileb.toURI().toString());
+        Image image = new Image(file.toURI().toString());
         //int w = (int)imageView.getFitWidth();
         //int h = (int)imageView.getFitHeight();
+        image = SwingFXUtils.toFXImage(colorToGray(image), null);
         imageView.setImage(image);
         //imageView.setFitHeight(h);
         //imageView.setFitWidth(w);
@@ -69,7 +64,34 @@ public class LandingFXMLController implements Initializable {
         centerImage();
         System.out.println("image set");
     }
+    private BufferedImage colorToGray(Image img){
+        BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
+        int height = bimg.getHeight();
+        int width = bimg.getWidth();
+        //System.out.printf("[%d x %d]\n", width, height);
 
+        for (int c = 0; c < width; c++)
+            for (int r = 0; r < height; r++) {
+                int rgb = bimg.getRGB(c, r);
+                int red   = (rgb >> 16) & 0xFF;
+                int green = (rgb >>  8) & 0xFF;
+                int blue  = (rgb >>  0) & 0xFF;
+
+                //int average = (int) (0.21 * red + 0.72 * green + 0.07 * blue);
+                int average = green;
+                int rr = average;
+                int gg = average;
+                int bb = average;
+//                if (red > 200)
+//                    rr = (int) (red * 1.5);
+//                if (rr > 255)
+//                    rr = 255;
+                rgb = (rr << 16) | (gg << 8) | bb;
+
+                bimg.setRGB(c, r, rgb);
+            }
+        return bimg;
+    }
     @FXML
     private void beforeButtonAction(ActionEvent event) {
     }
@@ -104,3 +126,27 @@ public class LandingFXMLController implements Initializable {
     }
     
 }
+
+/* buffered image to javafx image ***** alternative: SwingFXUtils
+ex: Image img = SwingFXUtils.toFXImage(hereIsTheBufferedImage, img);
+inv: fromFXImage(Image img, java.awt.image.BufferedImage bimg)
+BufferedImage bf = null;
+        try {
+            bf = ImageIO.read(new File("C:/location/of/image.png"));
+        } catch (IOException ex) {
+            System.out.println("Image failed to load.");
+        }
+ 
+        WritableImage wr = null;
+        if (bf != null) {
+            wr = new WritableImage(bf.getWidth(), bf.getHeight());
+            PixelWriter pw = wr.getPixelWriter();
+            for (int x = 0; x < bf.getWidth(); x++) {
+                for (int y = 0; y < bf.getHeight(); y++) {
+                    pw.setArgb(x, y, bf.getRGB(x, y));
+                }
+            }
+        }
+ 
+        ImageView imView = new ImageView(wr);
+*/
