@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="552.0" prefWidth="728.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="imagepro.LandingFXMLController">
+   <children>
+      <Label fx:id="appTitle" layoutX="35.0" layoutY="23.0" text="IMAGE PRO">
+         <font>
+            <Font size="25.0" />
+         </font>
+      </Label>
+      <HBox layoutX="285.0" layoutY="15.0" prefHeight="62.0" prefWidth="433.0">
+         <children>
+            <Button fx:id="addImageAndApplyEffectButton" mnemonicParsing="false" onAction="#addImageAndApplyEffectButtonAction" prefHeight="51.0" prefWidth="273.0" text="ADD IMAGE AND APPLY EFFECT">
+               <HBox.margin>
+                  <Insets right="15.0" />
+               </HBox.margin>
+            </Button>
+            <VBox fx:id="vBoxButtonGroup" prefHeight="52.0" prefWidth="234.0">
+               <children>
+                  <Button fx:id="beforeButton" mnemonicParsing="false" onAction="#beforeButtonAction" prefHeight="19.0" prefWidth="244.0" text="BEFORE">
+                     <VBox.margin>
+                        <Insets bottom="1.0" />
+                     </VBox.margin>
+                  </Button>
+                  <Button fx:id="afterButton" mnemonicParsing="false" onAction="#afterButtonAction" prefHeight="15.0" prefWidth="243.0" text="AFTER">
+                     <VBox.margin>
+                        <Insets top="1.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </HBox>
+      <ImageView fx:id="imageView" fitHeight="469.0" fitWidth="716.0" layoutX="6.0" layoutY="77.0" pickOnBounds="true" preserveRatio="true" />
+   </children>
+</AnchorPane>
