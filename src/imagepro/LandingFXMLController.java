@@ -185,10 +185,13 @@ public class LandingFXMLController implements Initializable {
 //    
     private BufferedImage flip(Image img){
         BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
-        BufferedImage flipped = drawWhiteCanvas(img);
+        
+        //BufferedImage flipped = drawWhiteCanvas(img);
         
         int height = bimg.getHeight();
         int width = bimg.getWidth();
+        
+        BufferedImage flipped = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         
         //System.out.printf("[%d x %d]\n", width, height);
         
@@ -206,27 +209,7 @@ public class LandingFXMLController implements Initializable {
         }
         return flipped;
     }
-    private BufferedImage drawWhiteCanvas(Image img){
-        BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
-        BufferedImage whiteImage = bimg;
-        
-        int height = bimg.getHeight();
-        int width = bimg.getWidth();
-        
-        int nr = height-1, nc = width-1;
-
-        for (int c = 0; c < width; c++){
-            for (int r = 0; r < height; r++){
-                int rr = 255;
-                int gg = 255;
-                int bb = 255;
-
-                int rgb = (rr << 16) | (gg << 8) | bb;
-                whiteImage.setRGB(nc - c, r, rgb);
-            }
-        }
-        return whiteImage;
-    }
+    
     private void adjustButtonsVisibility(){
         if(runningForTheFirstTime == 1){
             vBoxButtonGroup.setDisable(false);
