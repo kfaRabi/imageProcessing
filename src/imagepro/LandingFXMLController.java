@@ -10,6 +10,8 @@ import java.io.File;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -19,6 +21,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
@@ -51,20 +54,22 @@ public class LandingFXMLController implements Initializable {
     int runningForTheFirstTime = 1;
     @FXML
     private ComboBox<String> selectEffectDropdown;
+    @FXML
+    private VBox brightnessVBox;
+    @FXML
+    private Slider brightnessSlider;
     
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        options = FXCollections.observableArrayList();
-        options.add("Color To Grey");
-        options.add("Flip");
-        options.add("Increase Brightness");
-        options.add("Decrease Brightness");
-        selectEffectDropdown.setItems(options);
+        initializeEffectDropdownList();
+        initializeBrightnessSlider();
+        sliderListener();
+        
         vBoxButtonGroup.setDisable(true);
-//        selectEffectDropdown.setItems(options);
-    }    
-
+        brightnessVBox.setVisible(false);
+    }
+    
     @FXML
     private void addImageButtonAction(ActionEvent event) {
         //File fileb = new File("/src/sample.png");
@@ -114,17 +119,15 @@ public class LandingFXMLController implements Initializable {
         String effectName;
         effectName = selectEffectDropdown.getSelectionModel().getSelectedItem();
         switch (effectName) {
-            case "Color To Grey":
+            case "Color To Gray":
                 image = SwingFXUtils.toFXImage(colorToGray(imageOriginal), null);
                 break;
             case "Flip":
                 image = SwingFXUtils.toFXImage(flip(imageOriginal), null);
                 break;
-            case "Increase Brightness":
-                image = SwingFXUtils.toFXImage(increaseBrightness(imageOriginal), null);
-                break;
-            case "Decrease Brightness":
-                image = SwingFXUtils.toFXImage(decreaseBrightness(imageOriginal), null);
+            case "Increase/Decrease Brightness":
+                image = imageOriginal;
+                brightnessVBox.setVisible(true);
                 break;
         }
         
@@ -161,7 +164,7 @@ public class LandingFXMLController implements Initializable {
         }
         return bimg;
     }
-    private BufferedImage increaseBrightness(Image img){
+    private BufferedImage increaseBrightness(Image img, double coef){
         BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
         int height = bimg.getHeight();
         int width = bimg.getWidth();
@@ -173,9 +176,9 @@ public class LandingFXMLController implements Initializable {
                 int green = (rgb >>  8) & 0xFF;
                 int blue  = (rgb >>  0) & 0xFF;
                 //int average = green;
-                int rr = (int) (red * 1.3);
-                int gg = (int) (green * 1.3);
-                int bb = (int) (blue * 1.3);
+                int rr = (int) (red * coef);
+                int gg = (int) (green * coef);
+                int bb = (int) (blue * coef);
                 
                 if (rr > 255)
                     rr = 255;
@@ -191,7 +194,7 @@ public class LandingFXMLController implements Initializable {
         }
         return bimg;
     }
-    private BufferedImage decreaseBrightness(Image img){
+    private BufferedImage decreaseBrightness(Image img, double coef){
         BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
         int height = bimg.getHeight();
         int width = bimg.getWidth();
@@ -203,9 +206,9 @@ public class LandingFXMLController implements Initializable {
                 int green = (rgb >>  8) & 0xFF;
                 int blue  = (rgb >>  0) & 0xFF;
                 //int average = green;
-                int rr = (int) (red * .7);
-                int gg = (int) (green * .7);
-                int bb = (int) (blue * .7);
+                int rr = (int) (red * coef);
+                int gg = (int) (green * coef);
+                int bb = (int) (blue * coef);
                 
                 if (rr < 0)
                     rr = 0;
@@ -263,13 +266,45 @@ public class LandingFXMLController implements Initializable {
             for (int c = 0; c < width; c++){
                 int rgb = bimg.getRGB(c, r);
                 flipped.setRGB(nc - c, r, rgb);
-                //System.out.println("when c = "+c+", fc - c = "+(fc-c));
-                //fr--;
+                // place holder
             }
-            //fr = height-1;
-            //fc--;
         }
         return flipped;
+    }
+    
+    private void sliderListener(){
+        brightnessSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                //System.out.println("I am listening , old="+oldValue.doubleValue()+" new="+newValue.doubleValue());
+                if(newValue.doubleValue()>1.0){
+                    image = SwingFXUtils.toFXImage(increaseBrightness(imageOriginal, newValue.doubleValue()),null);
+                }
+                else if(newValue.doubleValue()<1.0){
+                    image = SwingFXUtils.toFXImage(decreaseBrightness(imageOriginal, newValue.doubleValue()),null);
+                }
+                imageView.setImage(image);
+                centerImage();
+                adjustButtonsVisibility();
+            }
+        });
+    }
+
+    private void initializeBrightnessSlider(){
+        
+        brightnessSlider.setMin(0.0);
+        brightnessSlider.setMax(3.0);
+        brightnessSlider.setValue(1.0);
+        brightnessSlider.setShowTickLabels(true);
+        //brightnessSlider.setShowTickMarks(true);
+    }
+    
+    private void initializeEffectDropdownList(){
+        options = FXCollections.observableArrayList();
+        options.add("Color To Gray");
+        options.add("Flip");
+        options.add("Increase/Decrease Brightness");
+        selectEffectDropdown.setItems(options);
     }
     
     private void adjustButtonsVisibility(){
