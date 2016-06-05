@@ -58,6 +58,8 @@ public class LandingFXMLController implements Initializable {
         options = FXCollections.observableArrayList();
         options.add("Color To Grey");
         options.add("Flip");
+        options.add("Increase Brightness");
+        options.add("Decrease Brightness");
         selectEffectDropdown.setItems(options);
         vBoxButtonGroup.setDisable(true);
 //        selectEffectDropdown.setItems(options);
@@ -118,6 +120,12 @@ public class LandingFXMLController implements Initializable {
             case "Flip":
                 image = SwingFXUtils.toFXImage(flip(imageOriginal), null);
                 break;
+            case "Increase Brightness":
+                image = SwingFXUtils.toFXImage(increaseBrightness(imageOriginal), null);
+                break;
+            case "Decrease Brightness":
+                image = SwingFXUtils.toFXImage(decreaseBrightness(imageOriginal), null);
+                break;
         }
         
         imageView.setImage(image);
@@ -153,36 +161,67 @@ public class LandingFXMLController implements Initializable {
         }
         return bimg;
     }
-    
-//    private BufferedImage increaseBrightness(Image img){ 
-//        BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
-//        int height = bimg.getHeight();
-//        int width = bimg.getWidth();
-//
-//        for (int c = 0; c < width; c++){
-//            for (int r = 0; r < height; r++) {
-//                int rgb = bimg.getRGB(c, r);
-//                int red   = (rgb >> 16) & 0xFF;
-//                int green = (rgb >>  8) & 0xFF;
-//                int blue  = (rgb >>  0) & 0xFF;
-//
-//                int average = (int) (0.21 * red + 0.72 * green + 0.07 * blue);
-//                //int average = green;
-//                int rr = (int) (red * 0.9);
-//                int gg = (int) (green * 0.9);
-//                int bb = (int) (blue * 0.9);
-////                if (red > 200)
-////                    rr = (int) (red * 1.5);
-////                if (rr > 255)
-////                    rr = 255;
-//                rgb = (rr << 16) | (gg << 8) | bb;
-//
-//                bimg.setRGB(c, r, rgb);
-//            }
-//        }
-//        return bimg;
-//    }
-//    
+    private BufferedImage increaseBrightness(Image img){
+        BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
+        int height = bimg.getHeight();
+        int width = bimg.getWidth();
+
+        for (int c = 0; c < width; c++){
+            for (int r = 0; r < height; r++) {
+                int rgb = bimg.getRGB(c, r);
+                int red   = (rgb >> 16) & 0xFF;
+                int green = (rgb >>  8) & 0xFF;
+                int blue  = (rgb >>  0) & 0xFF;
+                //int average = green;
+                int rr = (int) (red * 1.3);
+                int gg = (int) (green * 1.3);
+                int bb = (int) (blue * 1.3);
+                
+                if (rr > 255)
+                    rr = 255;
+                if (gg > 255)
+                    gg = 255;
+                if (bb > 255)
+                    bb = 255;
+                
+                rgb = (rr << 16) | (gg << 8) | bb;
+
+                bimg.setRGB(c, r, rgb);
+            }
+        }
+        return bimg;
+    }
+    private BufferedImage decreaseBrightness(Image img){
+        BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
+        int height = bimg.getHeight();
+        int width = bimg.getWidth();
+
+        for (int c = 0; c < width; c++){
+            for (int r = 0; r < height; r++) {
+                int rgb = bimg.getRGB(c, r);
+                int red   = (rgb >> 16) & 0xFF;
+                int green = (rgb >>  8) & 0xFF;
+                int blue  = (rgb >>  0) & 0xFF;
+                //int average = green;
+                int rr = (int) (red * .7);
+                int gg = (int) (green * .7);
+                int bb = (int) (blue * .7);
+                
+                if (rr < 0)
+                    rr = 0;
+                if (gg < 0)
+                    gg = 0;
+                if (bb < 0)
+                    bb = 0;
+                
+                rgb = (rr << 16) | (gg << 8) | bb;
+
+                bimg.setRGB(c, r, rgb);
+            }
+        }
+        return bimg;
+    }
+   
     private BufferedImage flip(Image img){
         BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
         
@@ -201,6 +240,29 @@ public class LandingFXMLController implements Initializable {
             for (int r = 0; r < height; r++){
                 int rgb = bimg.getRGB(c, r);
                 flipped.setRGB(fc - c, r, rgb);
+                //System.out.println("when c = "+c+", fc - c = "+(fc-c));
+                //fr--;
+            }
+            //fr = height-1;
+            //fc--;
+        }
+        return flipped;
+    }
+    
+    private BufferedImage rotateRight(Image img){
+        BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
+        
+        int height = bimg.getHeight();
+        int width = bimg.getWidth();
+        
+        BufferedImage flipped = new BufferedImage(height, width, BufferedImage.TYPE_INT_RGB);
+        
+        int nr = height-1, nc = width-1;
+
+        for (int r = 0; r < height; r++){
+            for (int c = 0; c < width; c++){
+                int rgb = bimg.getRGB(c, r);
+                flipped.setRGB(nc - c, r, rgb);
                 //System.out.println("when c = "+c+", fc - c = "+(fc-c));
                 //fr--;
             }
