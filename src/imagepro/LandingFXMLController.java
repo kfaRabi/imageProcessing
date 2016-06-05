@@ -132,6 +132,11 @@ public class LandingFXMLController implements Initializable {
                     image = imageOriginal;
                     brightnessVBox.setVisible(true);
                     break;
+                case "Rotate Right":
+                    System.out.println("switched");
+                    image = SwingFXUtils.toFXImage(rotateRight(imageOriginal), null);
+                    brightnessVBox.setVisible(false);
+                    break;
             }
         }
         catch(Exception e){
@@ -176,8 +181,8 @@ public class LandingFXMLController implements Initializable {
         int height = bimg.getHeight();
         int width = bimg.getWidth();
 
-        for (int c = 0; c < width; c++){
-            for (int r = 0; r < height; r++) {
+        for (int r = 0; r < height; r++){
+            for (int c = 0; c < width; c++) {
                 int rgb = bimg.getRGB(c, r);
                 int red   = (rgb >> 16) & 0xFF;
                 int green = (rgb >>  8) & 0xFF;
@@ -237,23 +242,34 @@ public class LandingFXMLController implements Initializable {
     }
     
     private BufferedImage rotateRight(Image img){
+        System.out.println("inside rotateRight");
+        
         BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
         
         int height = bimg.getHeight();
         int width = bimg.getWidth();
-        
-        BufferedImage flipped = new BufferedImage(height, width, BufferedImage.TYPE_INT_RGB);
-        
-        int nr = height-1, nc = width-1;
+
+        BufferedImage rotated = new BufferedImage(height, width, bimg.getType());
+
+        int nr = 0, nc = width-1;
 
         for (int r = 0; r < height; r++){
             for (int c = 0; c < width; c++){
                 int rgb = bimg.getRGB(c, r);
-                flipped.setRGB(nc - c, r, rgb);
-                // place holder
+                
+                //System.out.println("rgb: "+rgb);
+                
+                rotated.setRGB(nc, nr, rgb);
+                
+                nr = nr + 1;
+                //System.out.println("nc: "+nc+" nr: "+nr);
             }
+            nc = nc - 1;
+            nr=0;
+            System.out.println("nc right now: "+nc);
         }
-        return flipped;
+        System.out.println("about to return");
+        return rotated;
     }
     
     private void sliderListener(){
@@ -285,6 +301,7 @@ public class LandingFXMLController implements Initializable {
         options.add("Color To Gray");
         options.add("Flip");
         options.add("Increase/Decrease Brightness");
+        options.add("Rotate Right");
         selectEffectDropdown.setItems(options);
     }
     
