@@ -121,9 +121,11 @@ public class LandingFXMLController implements Initializable {
         switch (effectName) {
             case "Color To Gray":
                 image = SwingFXUtils.toFXImage(colorToGray(imageOriginal), null);
+                brightnessVBox.setVisible(false);
                 break;
             case "Flip":
                 image = SwingFXUtils.toFXImage(flip(imageOriginal), null);
+                brightnessVBox.setVisible(false);
                 break;
             case "Increase/Decrease Brightness":
                 image = imageOriginal;
