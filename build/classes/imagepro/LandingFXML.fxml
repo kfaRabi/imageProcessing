@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.shape.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.text.*?>
@@ -9,31 +10,40 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="552.0" prefWidth="728.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="imagepro.LandingFXMLController">
+<AnchorPane id="AnchorPane" prefHeight="599.0" prefWidth="910.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="imagepro.LandingFXMLController">
    <children>
-      <Label fx:id="appTitle" layoutX="35.0" layoutY="23.0" text="IMAGE PRO">
+      <Label fx:id="appTitle" layoutX="24.0" layoutY="23.0" text="IMAGE PRO">
          <font>
             <Font size="25.0" />
          </font>
       </Label>
-      <HBox layoutX="285.0" layoutY="15.0" prefHeight="62.0" prefWidth="433.0">
+      <HBox layoutX="527.0" layoutY="20.0" prefHeight="64.0" prefWidth="361.0">
          <children>
-            <Button fx:id="addImageAndApplyEffectButton" mnemonicParsing="false" onAction="#addImageAndApplyEffectButtonAction" prefHeight="51.0" prefWidth="273.0" text="ADD IMAGE AND APPLY EFFECT">
+            <Button fx:id="addImageButton" mnemonicParsing="false" onAction="#addImageButtonAction" prefHeight="51.0" prefWidth="273.0" text="ADD IMAGE">
                <HBox.margin>
                   <Insets right="15.0" />
                </HBox.margin>
+               <tooltip>
+                  <Tooltip text="Click Here To add an Image" />
+               </tooltip>
             </Button>
             <VBox fx:id="vBoxButtonGroup" prefHeight="52.0" prefWidth="234.0">
                <children>
-                  <Button fx:id="beforeButton" mnemonicParsing="false" onAction="#beforeButtonAction" prefHeight="19.0" prefWidth="244.0" text="BEFORE">
+                  <Button fx:id="beforeButton" mnemonicParsing="false" onAction="#beforeButtonAction" prefHeight="26.0" prefWidth="145.0" text="BEFORE">
                      <VBox.margin>
                         <Insets bottom="1.0" />
                      </VBox.margin>
+                     <tooltip>
+                        <Tooltip text="Click here to see original Image" />
+                     </tooltip>
                   </Button>
-                  <Button fx:id="afterButton" mnemonicParsing="false" onAction="#afterButtonAction" prefHeight="15.0" prefWidth="243.0" text="AFTER">
+                  <Button fx:id="afterButton" mnemonicParsing="false" onAction="#afterButtonAction" prefHeight="26.0" prefWidth="145.0" text="AFTER">
                      <VBox.margin>
                         <Insets top="1.0" />
                      </VBox.margin>
+                     <tooltip>
+                        <Tooltip text="Click here to see edited Image" />
+                     </tooltip>
                   </Button>
                </children>
             </VBox>
@@ -42,6 +52,18 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
       </HBox>
-      <ImageView fx:id="imageView" fitHeight="469.0" fitWidth="716.0" layoutX="6.0" layoutY="77.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="imageView" fitHeight="469.0" fitWidth="716.0" layoutX="185.0" layoutY="110.0" pickOnBounds="true" preserveRatio="true" />
+      <Line endX="100.0" layoutX="78.0" layoutY="152.0" startX="100.0" startY="300.0" />
+      <ComboBox fx:id="selectEffectDropdown" layoutX="22.0" layoutY="235.0" onAction="#selectEffectDropdownAction" prefHeight="25.0" prefWidth="142.0" promptText="Select Effect" />
+      <Label layoutX="22.0" layoutY="163.0" text="Apply Any Effect" textFill="#063361">
+         <font>
+            <Font name="Droid Serif" size="17.0" />
+         </font>
+      </Label>
+      <Label layoutX="22.0" layoutY="189.0" text="From The List:" textFill="#063361">
+         <font>
+            <Font name="Droid Serif" size="17.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

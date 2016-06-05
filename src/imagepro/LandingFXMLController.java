@@ -8,12 +8,16 @@ package imagepro;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -31,7 +35,7 @@ public class LandingFXMLController implements Initializable {
     @FXML
     private Label appTitle;
     @FXML
-    private Button addImageAndApplyEffectButton;
+    private Button addImageButton;
     @FXML
     private VBox vBoxButtonGroup;
     @FXML
@@ -41,34 +45,50 @@ public class LandingFXMLController implements Initializable {
     @FXML
     private ImageView imageView;
     
-    
+    private ObservableList<String> options;
     Image imageOriginal = null;
     Image image = null;
+    int runningForTheFirstTime = 1;
+    @FXML
+    private ComboBox<String> selectEffectDropdown;
+    
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        options = FXCollections.observableArrayList();
+        options.add("Color To Grey");
+        options.add("Flip");
+        selectEffectDropdown.setItems(options);
         vBoxButtonGroup.setDisable(true);
+//        selectEffectDropdown.setItems(options);
     }    
 
     @FXML
-    private void addImageAndApplyEffectButtonAction(ActionEvent event) {
+    private void addImageButtonAction(ActionEvent event) {
         //File fileb = new File("/src/sample.png");
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Please Select An Image");
-        File file = chooser.showOpenDialog(new Stage());
-        String imagepath = file.getPath();
-        System.out.println("file:"+imagepath);
-        imageOriginal = new Image(file.toURI().toString());
-        //int w = (int)imageView.getFitWidth();
-        //int h = (int)imageView.getFitHeight();
-        image = SwingFXUtils.toFXImage(flip(imageOriginal), null);
-        imageView.setImage(image);
-        //imageView.setFitHeight(h);
-        //imageView.setFitWidth(w);
-        //imageView.setPreserveRatio(true);
-        centerImage();
-        System.out.println("image set");
-        vBoxButtonGroup.setDisable(false);
-        afterButton.setDisable(true);
+        try{
+            File file = chooser.showOpenDialog(new Stage());
+            String imagepath = file.getPath();
+            System.out.println("file:"+imagepath);
+            imageOriginal = new Image(file.toURI().toString());
+            //int w = (int)imageView.getFitWidth();
+            //int h = (int)imageView.getFitHeight();
+//            image = SwingFXUtils.toFXImage(flip(imageOriginal), null);
+            imageView.setImage(imageOriginal);
+//            //imageView.setFitHeight(3000);
+//            //imageView.setFitWidth(w);
+//            //imageView.setPreserveRatio(true);
+            centerImage();
+            System.out.println("image placed");
+        }
+        catch(Exception e){
+            System.err.println("Exception!!!!!!!!!!!!!!!!!!!");
+             //e.printStackTrace();
+             
+        }
+        //adjustButtonsVisibility();
     }
 
     @FXML
@@ -87,29 +107,22 @@ public class LandingFXMLController implements Initializable {
         afterButton.setDisable(true);
     }
     
-    public void centerImage() {
-        Image img = imageView.getImage();
-        if (img != null) {
-            double w = 0;
-            double h = 0;
-
-            double ratioX = imageView.getFitWidth() / img.getWidth();
-            double ratioY = imageView.getFitHeight() / img.getHeight();
-
-            double reducCoeff = 0;
-            if(ratioX >= ratioY) {
-                reducCoeff = ratioY;
-            } else {
-                reducCoeff = ratioX;
-            }
-
-            w = img.getWidth() * reducCoeff;
-            h = img.getHeight() * reducCoeff;
-
-            imageView.setX((imageView.getFitWidth() - w) / 2);
-            imageView.setY((imageView.getFitHeight() - h) / 2);
-
+    @FXML
+    private void selectEffectDropdownAction(ActionEvent event) {
+        String effectName;
+        effectName = selectEffectDropdown.getSelectionModel().getSelectedItem();
+        switch (effectName) {
+            case "Color To Grey":
+                image = SwingFXUtils.toFXImage(colorToGray(imageOriginal), null);
+                break;
+            case "Flip":
+                image = SwingFXUtils.toFXImage(flip(imageOriginal), null);
+                break;
         }
+        
+        imageView.setImage(image);
+        centerImage();
+        adjustButtonsVisibility();
     }
     
     private BufferedImage colorToGray(Image img){
@@ -141,6 +154,35 @@ public class LandingFXMLController implements Initializable {
         return bimg;
     }
     
+//    private BufferedImage increaseBrightness(Image img){ 
+//        BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
+//        int height = bimg.getHeight();
+//        int width = bimg.getWidth();
+//
+//        for (int c = 0; c < width; c++){
+//            for (int r = 0; r < height; r++) {
+//                int rgb = bimg.getRGB(c, r);
+//                int red   = (rgb >> 16) & 0xFF;
+//                int green = (rgb >>  8) & 0xFF;
+//                int blue  = (rgb >>  0) & 0xFF;
+//
+//                int average = (int) (0.21 * red + 0.72 * green + 0.07 * blue);
+//                //int average = green;
+//                int rr = (int) (red * 0.9);
+//                int gg = (int) (green * 0.9);
+//                int bb = (int) (blue * 0.9);
+////                if (red > 200)
+////                    rr = (int) (red * 1.5);
+////                if (rr > 255)
+////                    rr = 255;
+//                rgb = (rr << 16) | (gg << 8) | bb;
+//
+//                bimg.setRGB(c, r, rgb);
+//            }
+//        }
+//        return bimg;
+//    }
+//    
     private BufferedImage flip(Image img){
         BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
         BufferedImage flipped = drawWhiteCanvas(img);
@@ -184,12 +226,49 @@ public class LandingFXMLController implements Initializable {
             }
         }
         return whiteImage;
-    }    
+    }
+    private void adjustButtonsVisibility(){
+        if(runningForTheFirstTime == 1){
+            vBoxButtonGroup.setDisable(false);
+            afterButton.setDisable(true);
+            runningForTheFirstTime = 0;
+        }
+        else{
+            beforeButton.setDisable(false);
+            afterButton.setDisable(true);
+        }
+    }
+    
+    public void centerImage() {
+        Image img = imageView.getImage();
+        if (img != null) {
+            double w = 0;
+            double h = 0;
+
+            double ratioX = imageView.getFitWidth() / img.getWidth();
+            double ratioY = imageView.getFitHeight() / img.getHeight();
+
+            double reducCoeff = 0;
+            if(ratioX >= ratioY) {
+                reducCoeff = ratioY;
+            } else {
+                reducCoeff = ratioX;
+            }
+
+            w = img.getWidth() * reducCoeff;
+            h = img.getHeight() * reducCoeff;
+
+            imageView.setX((imageView.getFitWidth() - w) / 2);
+            imageView.setY((imageView.getFitHeight() - h) / 2);
+
+        }
+    }
+
 }
 
-/* buffered image to javafx image ***** alternative: SwingFXUtils
-ex: Image img = SwingFXUtils.toFXImage(hereIsTheBufferedImage, img);
-inv: fromFXImage(Image img, java.awt.image.BufferedImage bimg)
+/* buffered image to javafx image ***** [[alternative: SwingFXUtils
+ex: Image img = SwingFXUtils.toFXImage(hereIsTheBufferedImage, null);
+inv: fromFXImage(Image img, java.awt.image.BufferedImage bimg)]]
 BufferedImage bf = null;
         try {
             bf = ImageIO.read(new File("C:/location/of/image.png"));
