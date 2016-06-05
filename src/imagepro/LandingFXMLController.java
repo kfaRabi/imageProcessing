@@ -117,20 +117,25 @@ public class LandingFXMLController implements Initializable {
     @FXML
     private void selectEffectDropdownAction(ActionEvent event) {
         String effectName;
-        effectName = selectEffectDropdown.getSelectionModel().getSelectedItem();
-        switch (effectName) {
-            case "Color To Gray":
-                image = SwingFXUtils.toFXImage(colorToGray(imageOriginal), null);
-                brightnessVBox.setVisible(false);
-                break;
-            case "Flip":
-                image = SwingFXUtils.toFXImage(flip(imageOriginal), null);
-                brightnessVBox.setVisible(false);
-                break;
-            case "Increase/Decrease Brightness":
-                image = imageOriginal;
-                brightnessVBox.setVisible(true);
-                break;
+        try{
+            effectName = selectEffectDropdown.getSelectionModel().getSelectedItem();
+            switch (effectName) {
+                case "Color To Gray":
+                    image = SwingFXUtils.toFXImage(colorToGray(imageOriginal), null);
+                    brightnessVBox.setVisible(false);
+                    break;
+                case "Flip":
+                    image = SwingFXUtils.toFXImage(flip(imageOriginal), null);
+                    brightnessVBox.setVisible(false);
+                    break;
+                case "Increase/Decrease Brightness":
+                    image = imageOriginal;
+                    brightnessVBox.setVisible(true);
+                    break;
+            }
+        }
+        catch(Exception e){
+            
         }
         
         imageView.setImage(image);
@@ -166,7 +171,7 @@ public class LandingFXMLController implements Initializable {
         }
         return bimg;
     }
-    private BufferedImage increaseBrightness(Image img, double coef){
+    private BufferedImage adjustBrightness(Image img, double adjustment){
         BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
         int height = bimg.getHeight();
         int width = bimg.getWidth();
@@ -178,9 +183,9 @@ public class LandingFXMLController implements Initializable {
                 int green = (rgb >>  8) & 0xFF;
                 int blue  = (rgb >>  0) & 0xFF;
                 //int average = green;
-                int rr = (int) (red * coef);
-                int gg = (int) (green * coef);
-                int bb = (int) (blue * coef);
+                int rr = (int) (red + adjustment);
+                int gg = (int) (green + adjustment);
+                int bb = (int) (blue + adjustment);
                 
                 if (rr > 255)
                     rr = 255;
@@ -188,29 +193,6 @@ public class LandingFXMLController implements Initializable {
                     gg = 255;
                 if (bb > 255)
                     bb = 255;
-                
-                rgb = (rr << 16) | (gg << 8) | bb;
-
-                bimg.setRGB(c, r, rgb);
-            }
-        }
-        return bimg;
-    }
-    private BufferedImage decreaseBrightness(Image img, double coef){
-        BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
-        int height = bimg.getHeight();
-        int width = bimg.getWidth();
-
-        for (int c = 0; c < width; c++){
-            for (int r = 0; r < height; r++) {
-                int rgb = bimg.getRGB(c, r);
-                int red   = (rgb >> 16) & 0xFF;
-                int green = (rgb >>  8) & 0xFF;
-                int blue  = (rgb >>  0) & 0xFF;
-                //int average = green;
-                int rr = (int) (red * coef);
-                int gg = (int) (green * coef);
-                int bb = (int) (blue * coef);
                 
                 if (rr < 0)
                     rr = 0;
@@ -226,7 +208,7 @@ public class LandingFXMLController implements Initializable {
         }
         return bimg;
     }
-   
+    
     private BufferedImage flip(Image img){
         BufferedImage bimg = SwingFXUtils.fromFXImage(img, null);
         
@@ -279,12 +261,7 @@ public class LandingFXMLController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 //System.out.println("I am listening , old="+oldValue.doubleValue()+" new="+newValue.doubleValue());
-                if(newValue.doubleValue()>1.0){
-                    image = SwingFXUtils.toFXImage(increaseBrightness(imageOriginal, newValue.doubleValue()),null);
-                }
-                else if(newValue.doubleValue()<1.0){
-                    image = SwingFXUtils.toFXImage(decreaseBrightness(imageOriginal, newValue.doubleValue()),null);
-                }
+                image = SwingFXUtils.toFXImage(adjustBrightness(imageOriginal, newValue.doubleValue()),null);
                 imageView.setImage(image);
                 centerImage();
                 adjustButtonsVisibility();
@@ -294,11 +271,13 @@ public class LandingFXMLController implements Initializable {
 
     private void initializeBrightnessSlider(){
         
-        brightnessSlider.setMin(0.0);
-        brightnessSlider.setMax(3.0);
-        brightnessSlider.setValue(1.0);
+        brightnessSlider.setMin(-255.0);
+        brightnessSlider.setMax(+255.0);
+        brightnessSlider.setValue(0);
         brightnessSlider.setShowTickLabels(true);
-        //brightnessSlider.setShowTickMarks(true);
+        brightnessSlider.setMajorTickUnit(100);
+        brightnessSlider.setMinorTickCount(2);
+
     }
     
     private void initializeEffectDropdownList(){
